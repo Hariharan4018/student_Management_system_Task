@@ -2,6 +2,10 @@
 
 class Validator
 {
+    public static bool ContainsEmail(string email)
+    {
+        return Student.StudentDetails.Any(x => x.Value.Student_Email.Equals(email.ToLower()));
+    }
     public static bool IsValidName(string name)
     {
         return System.Text.RegularExpressions.Regex.IsMatch(name, @"^[A-Za-z]+( [A-Za-z]+)*$");

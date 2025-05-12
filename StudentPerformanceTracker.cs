@@ -25,4 +25,8 @@ class StudentPerformanceTracker {
     {
         Student.DisplayNumberOfStudentInEachCatogory();
     }
+    public void UpdateStudentDetails()
+    {
+        Student.UpdateStudentDetails();
+    }
 }

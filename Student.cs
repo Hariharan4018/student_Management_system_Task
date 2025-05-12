@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
 public abstract class Student
 {
     public static Dictionary<string, Student> StudentDetails = new Dictionary<string, Student>();
@@ -67,6 +69,129 @@ public abstract class Student
         Console.WriteLine("Exchange student Details in each Catogory");
         Console.WriteLine("Pass  =" + Pass);
         Console.WriteLine("Fail  =" +Fail);
+    }
+    public static void UpdateStudentDetails()
+    {
+        Console.WriteLine("Enter the Student Id You want to Update");
+        string StudentIdToUpdate = Console.ReadLine();
+        while (!Validator.IsValidId(StudentIdToUpdate.ToUpper()))
+        {
+            Console.WriteLine("Student ID Not Found");
+            Console.WriteLine("Do You Want To Continue (y/n)");
+            string Continue = Console.ReadLine();
+            while(!Continue.ToLower().Equals("y") && !Continue.ToLower().Equals("n"))
+            {
+                Console.WriteLine("Please Enter the Valid Option Either Y or N");
+                Continue = Console.ReadLine();
+            }
+            if (Continue.ToLower().Equals("y"))
+            {
+                Console.WriteLine("Enter the valid StudentId");
+                StudentIdToUpdate = Console.ReadLine();
+            }
+            else
+            {
+                return;
+            }
+        }
+        Student student = StudentDetails[StudentIdToUpdate.ToUpper()];
+        Type type= typeof(Student);
+        PropertyInfo[] property=type.GetProperties();
+        PropertyInfo[] RequiredProps = property.Where(x => !x.Name.Equals("Student_Id")).Where(x => !x.Name.Equals("Grade")).ToArray();
+        int i = 1;
+        foreach (PropertyInfo propertyInfo in RequiredProps) {
+            
+                Console.WriteLine(i++ +"."+propertyInfo.Name);
+            
+        }
+        Console.WriteLine("Enter the Property You Want to Update");
+        int option = 0;
+        bool UpdateOptionLoop = true;
+        while (UpdateOptionLoop)
+        {
+            try
+            {
+                option = int.Parse(Console.ReadLine());
+                if (option > RequiredProps.Length || option < 1)
+                {
+                    throw new Exception("Invalid option");
+                }
+                UpdateOptionLoop = false;
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("Please Enter the Valid Option");
+                Console.ResetColor();
+            }
+        }
+        PropertyInfo PropertyTOUpdate = RequiredProps[option-1];
+        
+        if (option == 1)
+        {
+            Console.WriteLine("Enter the Name to Update");
+            var UpdatedValue=Console.ReadLine();
+            while (!Validator.IsValidName((string)UpdatedValue))
+            {
+                Console.WriteLine("Enter the Valid Name");
+                UpdatedValue= Console.ReadLine();
+            }
+            PropertyTOUpdate.SetValue(student, UpdatedValue);
+        }
+        if (option == 2) {
+        ValidEmail:
+            Console.WriteLine("Enter the Email to Update");
+           var UpdatedValue=Console.ReadLine();
+            while (!Validator.IsValidEmail((string)UpdatedValue))
+            {
+                Console.WriteLine("Please Enter the Valid Email");
+                UpdatedValue = Console.ReadLine();
+            }
+            if (Validator.ContainsEmail((string)UpdatedValue))
+            {
+                Console.WriteLine("User Email Already Exists");
+                goto ValidEmail;
+            }
+            PropertyTOUpdate.SetValue(student, UpdatedValue);
+
+        }
+        if (option == 3) {
+            Console.WriteLine("Enter the Updated Value for Marks");
+           var UpdatedValue=new List<double>();
+            for (int k = 0; k < 5;)
+            {
+                Console.WriteLine($"Enter the mark for Subject {k + 1}");
+                double Mark = 0;
+                try
+                {
+                    Mark = double.Parse(Console.ReadLine());
+                    if (Mark > 100 || Mark < 0) throw new Exception("Mark must be with in 100 and postivie number");
+                    UpdatedValue.Add(Mark);
+                }
+                catch (FormatException ex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Mark Must Be a Numeic Value");
+                    Console.WriteLine("Please Enter the Valid Mark");
+                    Console.ResetColor();
+
+                    continue;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    continue;
+                }
+                k++;
+            }
+
+            PropertyTOUpdate.SetValue(student, UpdatedValue);
+            student.Grade = student.CalculateGrade(student.Marks);
+        }
+
+
+
     }
 
     public abstract void AssignGrade(Student student,List<double> Marks);

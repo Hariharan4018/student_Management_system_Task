@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 
 class Program
@@ -18,6 +19,7 @@ class Program
             Console.WriteLine("4.Search Student by Name or Id");
             Console.WriteLine("5.Display All Student Details");
             Console.WriteLine("6.Display the Number of Students in Each catogory");
+            Console.WriteLine("7.Exit");
 
             Console.WriteLine("Please choose the option you want to perform");
             bool UserOptionLoop = true;
@@ -48,8 +50,11 @@ class Program
             switch (UserOption)
             {
                 case 1:
-                      AddNewStudent();
+                    AddNewStudent();
                       break;
+                case 2:
+                    UpdateStudentDetails();
+                    break;
                 case 3:
                     DeleteStudentDetails();
                     break;
@@ -62,6 +67,9 @@ class Program
                 case 6:
                     DisplayNumberOfStudentInEachCatogory();
                     break;
+                case 7:
+                    Console.WriteLine("Application Closed");
+                    return;
 
             }
         }
@@ -77,12 +85,18 @@ class Program
             Console.WriteLine("Student Name Must Be a Alpabatical word");
             StudentName = Console.ReadLine();
         }
+    ValidEmail:
         Console.WriteLine("Enter the Student Email Id");
         string Student_Email = Console.ReadLine();
-        while (!Validator.IsValidEmail(Student_Email))
+        while (!Validator.IsValidEmail(Student_Email) )
         {
             Console.WriteLine("Please Enter the Valid Email");
             Student_Email = Console.ReadLine();
+        }
+        if (Validator.ContainsEmail(Student_Email))
+        {
+            Console.WriteLine("User Email Already Exists");
+            goto ValidEmail;
         }
         List<double> Marks = new List<double>();
         Console.WriteLine("Enter The Mark for 5 Subjects");
@@ -199,5 +213,9 @@ class Program
     static void DisplayNumberOfStudentInEachCatogory()
     {
         studentPerformanceTracker.DisplayNumberOfStudentInEachCatogory();
+    }
+    static void UpdateStudentDetails()
+    {
+        studentPerformanceTracker.UpdateStudentDetails();
     }
 }
